@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="lilSumi">
+    <title>Signing-In</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+    <div class="linked">
+        <a href="/" >↺ <span class="und">go back</span></a>
+    </div>
+    <div class="page">
+        <a class="main-title" href="/">E-Journal</a>
+        <div class="box-auth">
+            <form class="box-auth-form" method="post">
+                <h4 class="title">Welcome back</h4>
+                <div class="box-input">
+                    <input class="entype" required type="text" placeholder="login" name="login">
+                </div>
+                <div class="box-input">
+                    <input class="entype" required type="password" placeholder="password" name="password">
+                </div>
+                <button class="act-button" id="login-button" type="submit">sing in</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

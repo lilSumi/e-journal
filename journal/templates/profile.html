@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="lilSumi">
+    <title>Profile</title>
+</head>
+<body>
+    <div>
+        <a class="main-title">E-Journal</a>
+    </div>
+    <a href="/logout">log out</a>
+    <div class="content">
+        <table border>
+            <thead>
+                <th>subject</th>
+                <th>marks</th>
+                <th>average</th>
+            </thead>
+            <tbody>
+                {% for i in subjects %}
+                    <tr>
+                        <td>{{i}}</td>
+                        <td>{{marks[i]}}</td>
+                        <td>{{marks_avg[i]}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

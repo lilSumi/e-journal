@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="lilSumi">
+    <title>Profile</title>
+    <style>
+        .box-content input {
+            width: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <a class="main-title">E-Journal</a>
+    </div>
+    <a href="/logout">log out</a>
+    <div class="box-links">
+
+    </div>
+    <div class="box-content">
+        <form method="post" class="box-content-form">
+            <button type="submit">save changes</button>
+            <table border>
+                <thead>
+                    <th>Name</th>
+                    {% for i in dates %}
+                        <th>{{i[1]}}</th>
+                    {% endfor %}
+                    <th>Score</th>
+                </thead>
+                <tbody>
+                    {% for i in students %}
+                        <tr>
+                            <td>{{i[1]}}</td>
+                            {% for j in dates %}
+                            <td><input name={{marks[i[0]][j[0]][0]}} type="text" value={{marks[i[0]][j[0]][1]}}></td>
+                            {% endfor %}
+                            <td>{{marks[i[0]][0]}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+    </div>
+</body>
+</html>

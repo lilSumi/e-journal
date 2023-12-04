@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author", content="lilSumi">
+    <title>Admin</title>
+</head>
+<body>
+    <form method="post">
+        <input required type="text" placeholder="username" name="username"><br>
+        <input required type="text" placeholder="password" name="password"><br>
+        <label for="type">Ученик</label>
+        <input required type="radio" name="type" value="student">
+        <label for="type">Учитель</label>
+        <input required type="radio" name="type" value="teacher"><br>
+        <label for="groop">Класс</label>
+        <select name="groop">
+            <option selected value=None>Не выбрано</option>
+            {% for i in groops %}
+                <option value={{i.name}}>{{i.name}}</option>
+            {% endfor %}
+        </select><br>
+        <label for="groops">Напишите классы через запятую без пробелов</label><br>
+        <input type="text" name="groops" placeholder="классы"><br>
+        <label for="subject">Предмет</label><br>
+        <input type="text" name="subject"><br>
+        <input required type="text" placeholder="name" name="name"><br>
+        <input required type="text" placeholder="last_name" name="last_name"><br>
+        <input type="checkbox" value=1>
+        <button type="submit">send</button>
+    </form>
+</body>
+</html>
