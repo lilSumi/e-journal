@@ -21,9 +21,9 @@
             <tbody>
                 {% for i in subjects %}
                     <tr>
-                        <td>{{i}}</td>
-                        <td>{{marks[i]}}</td>
-                        <td>{{marks_avg[i]}}</td>
+                        <td>{{i[1]}}</td>
+                        <td>{{marks[i[0]]}}</td>
+                        <td>{{marks_avg[i[0]]}}</td>
                     </tr>
                 {% endfor %}
             </tbody>

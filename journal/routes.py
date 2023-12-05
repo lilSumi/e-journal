@@ -1,7 +1,7 @@
 from journal import app, db, login_manager
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, abort
 from flask_login import login_user, login_required, current_user, logout_user
-from models import Users, Students, Teachers, Marks, GroopsTeachers, Groops, Dates
+from models import Users, Students, Subjects, Marks, GroopsTeachers, Groops, Dates, SubjectsTeachers
 from datetime import date
 
 
@@ -53,24 +53,29 @@ def index():
 @app.route('/profile')
 @login_required
 def profiles():
-    grp_id = Students.query.filter_by(id=current_user.id).first().groop_id
-    teachers = GroopsTeachers.query.filter_by(groop_id=grp_id).all()
+    grp_id = Students.query.filter_by(id=current_user.id).first().groop_id  # Ищем из какого класса чел
+    teachers = GroopsTeachers.query.filter_by(groop_id=grp_id).all()  # Ищем какие учителя учат чела
+    subjects = list()  # Список в котором названия предметов
+    for i in teachers:
+        subj = SubjectsTeachers.query.filter_by(teacher_id=i.teacher_id).all()  # Ищем какие предметы ведёт учитель
+        for j in subj:
+            sub = Subjects.query.filter_by(id=j.subject_id).all()  # Ищем названия предметов в соответствующей таблице
+            for m in sub:
+                subjects.append((m.id, m.name))
     mark = dict()
     mark_avg = dict()
-    for i in teachers:
-        tch = Teachers.query.filter_by(id=i.teacher_id).first()
-        marks1 = Marks.query.filter_by(teacher_id=tch.id, student_id=current_user.id).order_by(Marks.date_id).all()
+    for i in subjects:
+        marks = Marks.query.filter_by(student_id=current_user.id, subject_id=i[0]).order_by(Marks.date_id).all()
         mks = list()
-        for j in marks1:
+        for j in marks:
             mks.append(j.mark)
         mks1 = [str(m) for m in mks]
-        mark[tch.subject] = ' '.join(mks1)
+        mark[i[0]] = ' '.join(mks1)
         if len(mks) != 0:
             avg = round(sum(mks) / len(mks), 2)
         else:
             avg = 0
-        mark_avg[tch.subject] = avg
-    subjects = mark.keys()
+        mark_avg[i[0]] = avg
     return render_template('profile.html', marks=mark, marks_avg=mark_avg, subjects=subjects)
 
 
@@ -80,65 +85,93 @@ def profile():
     return 'you are a teacher!'
 
 
-@app.route('/teacher/<int:id>', methods=['GET', 'POST'])
+@app.route('/teacher/<int:subject_id>/<int:groop_id>', methods=['GET', 'POST'])
 @login_required
-def profilet(id):
-    if request.method == 'POST':
-        ds = Dates.query.order_by(Dates.id).all()
-        stds = Students.query.filter_by(groop_id=id).all()
-        for i in stds:
-            for j in ds:
-                mark = request.form.get(f'{i.id}_{j.id}')
-                try:
-                    mk = Marks.query.filter_by(teacher_id=current_user.id, student_id=i.id, date_id=j.id).first()
-                except:
-                    pass
-                if mk:
-                    if not mark or mark == '':
-                        db.session.delete(mk)
-                        db.session.commit()
-                    elif int(mark) == 1 or int(mark) == 2 or int(mark) == 3 or int(mark) == 4 or int(mark) == 5:
-                        mk.mark = int(mark)
-                        db.session.commit()
-                else:
-                    if not mark or mark == '':
+def profilet(subject_id, groop_id):
+    user = Users.query.filter_by(id=current_user.id).first()
+    if user.type == 'teacher':
+        gt = [i.groop_id for i in GroopsTeachers.query.filter_by(teacher_id=current_user.id).all()]
+        st = [i.subject_id for i in SubjectsTeachers.query.filter_by(teacher_id=current_user.id).all()]
+        if groop_id in gt and subject_id in st:
+            if request.method == 'POST':
+                ds = Dates.query.filter_by(groop_id=groop_id, subject_id=subject_id).order_by(Dates.date).all()
+                stds = Students.query.filter_by(groop_id=groop_id).all()
+                for i in stds:
+                    for j in ds:
+                        mark = request.form.get(f'{i.id}_{j.id}')
+                        try:
+                            mk = Marks.query.filter_by(subject_id=subject_id, student_id=i.id, date_id=j.id).first()
+                        except:
+                            pass
+                        if mk:
+                            if not mark or mark == '':
+                                db.session.delete(mk)
+                                db.session.commit()
+                            elif int(mark) == 1 or int(mark) == 2 or int(mark) == 3 or int(mark) == 4 or int(mark) == 5:
+                                mk.mark = int(mark)
+                                db.session.commit()
+                        else:
+                            if not mark or mark == '':
+                                pass
+                            elif int(mark) == 1 or int(mark) == 2 or int(mark) == 3 or int(mark) == 4 or int(mark) == 5:
+                                mk = Marks(subject_id=subject_id, student_id=i.id, date_id=j.id, mark=int(mark))
+                                db.session.add(mk)
+                                db.session.commit()
+            ds = Dates.query.filter_by(groop_id=groop_id, subject_id=subject_id).order_by(Dates.date).all()
+            dts = list()
+            for i in ds:
+                d = i.date.split('-')
+                dts.append((i.id, f'{d[2]}.{d[1]}'))
+            stds = Students.query.filter_by(groop_id=groop_id).all()
+            marks = dict()
+            for i in stds:
+                mks = dict()
+                for j in ds:
+                    try:
+                        mark = Marks.query.filter_by(subject_id=subject_id, student_id=i.id, date_id=j.id).first()
+                    except:
                         pass
-                    elif int(mark) == 1 or int(mark) == 2 or int(mark) == 3 or int(mark) == 4 or int(mark) == 5:
-                        mk = Marks(teacher_id=current_user.id, student_id=i.id, date_id=j.id, mark=int(mark))
-                        db.session.add(mk)
-                        db.session.commit()
-    ds = Dates.query.order_by(Dates.id).all()
-    dts = list()
-    for i in ds:
-        d = i.date.split('-')
-        dts.append((i.id, f'{d[2]}.{d[1]}'))
-    stds = Students.query.filter_by(groop_id=id).all()
-    marks = dict()
-    for i in stds:
-        mks = dict()
-        for j in ds:
+                    if mark:
+                        mks[j.id] = (f'{i.id}_{j.id}', mark.mark)
+                    else:
+                        mks[j.id] = (f'{i.id}_{j.id}', '')
+                mr = Marks.query.filter_by(subject_id=subject_id, student_id=i.id).all()
+                m = [n.mark for n in mr]
+                if len(m) != 0:
+                    avg = round(sum(m) / len(m), 2)
+                else:
+                    avg = 0
+                mks[0] = avg
+                marks[i.id] = mks
+            students = list()
+            for i in stds:
+                student = Users.query.filter_by(id=i.id).first()
+                students.append((i.id, f'{student.last_name} {student.name}'))
+            students.sort(key=lambda w: w[1])
+            return render_template('profilet.html', dates=dts, students=students, marks=marks,
+                                   subject_id=subject_id, groop_id=groop_id)
+        return abort(403)
+    return abort(403)
+
+
+@app.route('/teacher/<int:subject_id>/<int:groop_id>/create', methods=['GET', 'POST'])
+@login_required
+def create(subject_id, groop_id):
+    if request.method == 'POST':
+        date1 = date.today()
+        dt = request.form.get('date')
+        if dt <= str(date1):
             try:
-                mark = Marks.query.filter_by(teacher_id=current_user.id, student_id=i.id, date_id=j.id).first()
+                dat = Dates.query.filter_by(date=dt, subject_id=subject_id, groop_id=groop_id).first()
             except:
                 pass
-            if mark:
-                mks[j.id] = (f'{i.id}_{j.id}', mark.mark)
-            else:
-                mks[j.id] = (f'{i.id}_{j.id}', '')
-        mr = Marks.query.filter_by(teacher_id=current_user.id, student_id=i.id).all()
-        m = [n.mark for n in mr]
-        if len(m) != 0:
-            avg = round(sum(m) / len(m), 2)
-        else:
-            avg = 0
-        mks[0] = avg
-        marks[i.id] = mks
-    students = list()
-    for i in stds:
-        student = Users.query.filter_by(id=i.id).first()
-        students.append((i.id, f'{student.name} {student.last_name}'))
-        print(marks, dts, students, sep='\n')
-    return render_template('profilet.html', dates=dts, students=students, marks=marks)
+            if not dat:
+                dat = Dates(date=dt, subject_id=subject_id, groop_id=groop_id)
+                db.session.add(dat)
+                db.session.commit()
+            return redirect(f'/teacher/{subject_id}/{groop_id}')
+        return redirect(f'/teacher/{subject_id}/{groop_id}/create')
+    return render_template('create.html', subject_id=subject_id, groop_id=groop_id)
 
 
 @app.route('/admin', methods=['GET', 'POST'])
@@ -148,23 +181,24 @@ def admin():
         password = request.form.get('password')
         type = request.form.get('type')
         groop = request.form.get('groop')
-        subject = request.form.get('subject')
+        subject = request.form.get('subject').split(',')
         name = request.form.get('name')
         last_name = request.form.get('last_name')
         isadmin = request.form.get('isadmin')
         tgroops = request.form.get('groops').split(',')
-        print(tgroops)
         user = Users(username=username, password=password, type=type, name=name, last_name=last_name, isadmin=isadmin)
         if type == 'teacher':
             db.session.add(user)
             db.session.commit()
             tchr = Users.query.filter_by(username=username).first()
-            teacher = Teachers(id=tchr.id, subject=subject)
-            db.session.add(teacher)
             for i in tgroops:
                 grp = Groops.query.filter_by(name=i).first()
                 gteacher = GroopsTeachers(groop_id=grp.id, teacher_id=tchr.id)
                 db.session.add(gteacher)
+            for i in subject:
+                sbj = Subjects.query.filter_by(name=i).first()
+                steacher = SubjectsTeachers(teacher_id=tchr.id, subject_id=sbj.id)
+                db.session.add(steacher)
             db.session.commit()
         else:
             db.session.add(user)
