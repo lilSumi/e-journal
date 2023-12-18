@@ -10,39 +10,69 @@
             width: 2rem;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profilet.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div>
-        <a class="main-title">E-Journal</a>
-    </div>
-    <a href="/logout">log out</a>
-    <div class="box-content">
-        <div class="create-button">
-            <a href="/teacher/{{subject_id}}/{{groop_id}}/create">Create Lesson</a>
+    <div class="head">
+        <div class="main-title">
+            <p>E-Journal</p>
         </div>
-        <form method="post" class="box-content-form">
-            <button type="submit">save changes</button>
-            <table border>
-                <thead>
-                    <th>Name</th>
-                    {% for i in dates %}
-                        <th>{{i[1]}}</th>
-                    {% endfor %}
-                    <th>Score</th>
-                </thead>
-                <tbody>
-                    {% for i in students %}
-                        <tr>
-                            <td>{{i[1]}}</td>
-                            {% for j in dates %}
-                            <td><input name={{marks[i[0]][j[0]][0]}} type="text" value={{marks[i[0]][j[0]][1]}}></td>
-                            {% endfor %}
-                            <td>{{marks[i[0]][0]}}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </form>
+        <a class="log_out" href="/logout">log out</a>
+    </div>
+    <div class="hello">
+        <div class="hello">
+            <p>Здравствуйте, {{name}}</p>
+            <p>{{task}}, {{groop}}</p>
+        </div>
+    </div>
+    <div class="main-inf">
+        <div class="left-side">
+            <div class="left-side1">
+                <p>Предметы:</p>
+                {% for i in subjects %}
+                    <a href="/teacher/{{i[0]}}">{{i[1]}}</a>
+                {% endfor %}
+            </div>
+            <div class="left-side1">
+                <p>Классы:</p>
+                {% for i in groops %}
+                    <a href="/teacher/{{subject_id}}/{{i[0]}}">{{i[1]}}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="box-content">
+            <form method="post" class="box-content-form">
+                <div class="buttons">
+                    <button type="submit">Save Changes</button>
+                    <a href="/teacher/{{subject_id}}/{{groop_id}}/create">Create Lesson</a>
+                </div>
+                <table border>
+                    <thead>
+                        <th>Name</th>
+                        {% for i in dates %}
+                            <th>{{i[1]}}</th>
+                        {% endfor %}
+                        <th>Score</th>
+                    </thead>
+                    <tbody>
+                        {% for i in students %}
+                            <tr>
+                                <td>{{i[1]}}</td>
+                                {% for j in dates %}
+                                <td class="mks">
+                                    <div>
+                                        <input class="input-filter" name={{marks[i[0]][j[0]][0]}} type="text" value={{marks[i[0]][j[0]][1]}}>
+                                    </div>
+                                </td>
+                                {% endfor %}
+                                <td>{{marks[i[0]][0]}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
     </div>
 </body>
 </html>

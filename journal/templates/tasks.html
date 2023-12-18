@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="lilSumi">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/create.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tasks.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat&family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <title>Create Lesson</title>
+    <title>Profile</title>
 </head>
 <body>
     <div class="head">
@@ -15,13 +15,16 @@
         </div>
         <a class="log_out" href="/logout">log out</a>
     </div>
-    <div class="box-content">
-        <a href="/teacher/{{subject_id}}/{{groop_id}}">go back</a>
-        <form method="post">
-            <label for="date">Выберите дату</label><br>
-            <input type="date" name="date"><br>
-            <button type="submit">Create Lesson</button>
-        </form>
+    <div class="hello">
+        <p>Здравствуйте, {{name}}</p>
+    </div>
+    <div class="main-inf">
+        <div class="box-content">
+            <p>Выберите предмет:</p>
+            {% for i in subjects %}
+                <a href="/teacher/{{i[0]}}">{{i[1]}}</a>
+            {% endfor %}
+        </div>
     </div>
 </body>
 </html>

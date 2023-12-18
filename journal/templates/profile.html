@@ -1,33 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="lilSumi">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
     <title>Profile</title>
 </head>
 <body>
-    <div>
-        <a class="main-title">E-Journal</a>
+    <div class="head">
+        <div class="main-title">
+            <p>E-Journal</p>
+        </div>
+        <a class="log_out" href="/logout">log out</a>
     </div>
-    <a href="/logout">log out</a>
-    <div class="content">
-        <table border>
-            <thead>
-                <th>subject</th>
-                <th>marks</th>
-                <th>average</th>
-            </thead>
-            <tbody>
-                {% for i in subjects %}
-                    <tr>
-                        <td>{{i[1]}}</td>
-                        <td>{{marks[i[0]]}}</td>
-                        <td>{{marks_avg[i[0]]}}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="main-inf">
+        <div class="hello">
+            <p>Hello, {{name}}</p>
+        </div>
+        <div class="table">
+            <table border>
+                <thead>
+                    <th>subject</th>
+                    <th>marks</th>
+                    <th>average</th>
+                </thead>
+                <tbody>
+                    {% for i in subjects %}
+                        <tr>
+                            <td>{{i[1]}}</td>
+                            <td>{{marks[i[0]]}}</td>
+                            <td>{{marks_avg[i[0]]}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div> 
     </div>
 </body>
 </html>

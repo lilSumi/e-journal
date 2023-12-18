@@ -76,13 +76,44 @@ def profiles():
         else:
             avg = 0
         mark_avg[i[0]] = avg
-    return render_template('profile.html', marks=mark, marks_avg=mark_avg, subjects=subjects)
+        me = Users.query.filter_by(id=current_user.id).first()
+        name = f'{me.last_name} {me.name}'
+    return render_template('profile.html', marks=mark, marks_avg=mark_avg, subjects=subjects, name=name)
 
 
 @app.route('/teacher')
 @login_required
 def profile():
-    return 'you are a teacher!'
+    subjects = list()
+    subj = SubjectsTeachers.query.filter_by(teacher_id=current_user.id).all()  # Ищем какие предметы ведёт учитель
+    for j in subj:
+        sub = Subjects.query.filter_by(id=j.subject_id).all()  # Ищем названия предметов в соответствующей таблице
+        for m in sub:
+            subjects.append((m.id, m.name))
+    us = Users.query.filter_by(id=current_user.id).first()
+    user = f'{us.last_name} {us.name}'
+    return render_template('tasks.html', subjects=subjects, name=user)
+
+
+@app.route('/teacher/<int:subject_id>')
+@login_required
+def choose_groop(subject_id):
+    subjects = list()
+    subj = SubjectsTeachers.query.filter_by(teacher_id=current_user.id).all()  # Ищем какие предметы ведёт учитель
+    for j in subj:
+        sub = Subjects.query.filter_by(id=j.subject_id).all()  # Ищем названия предметов в соответствующей таблице
+        for m in sub:
+            subjects.append((m.id, m.name))
+    groops = list()
+    grps = GroopsTeachers.query.filter_by(teacher_id=current_user.id).all()
+    for j in grps:
+        grp = Groops.query.filter_by(id=j.groop_id).all()
+        for m in grp:
+            groops.append((m.id, m.name))
+    subject = Subjects.query.filter_by(id=subject_id).first()
+    us = Users.query.filter_by(id=current_user.id).first()
+    user = f'{us.last_name} {us.name}'
+    return render_template('groops.html', subjects=subjects, groops=groops, id=subject_id, task=subject.name, name=user)
 
 
 @app.route('/teacher/<int:subject_id>/<int:groop_id>', methods=['GET', 'POST'])
@@ -117,6 +148,20 @@ def profilet(subject_id, groop_id):
                                 mk = Marks(subject_id=subject_id, student_id=i.id, date_id=j.id, mark=int(mark))
                                 db.session.add(mk)
                                 db.session.commit()
+            subjects = list()
+            subj = SubjectsTeachers.query.filter_by(
+                teacher_id=current_user.id).all()  # Ищем какие предметы ведёт учитель
+            for j in subj:
+                sub = Subjects.query.filter_by(
+                    id=j.subject_id).all()  # Ищем названия предметов в соответствующей таблице
+                for m in sub:
+                    subjects.append((m.id, m.name))
+            groops = list()
+            grps = GroopsTeachers.query.filter_by(teacher_id=current_user.id).all()
+            for j in grps:
+                grp = Groops.query.filter_by(id=j.groop_id).all()
+                for m in grp:
+                    groops.append((m.id, m.name))
             ds = Dates.query.filter_by(groop_id=groop_id, subject_id=subject_id).order_by(Dates.date).all()
             dts = list()
             for i in ds:
@@ -148,8 +193,13 @@ def profilet(subject_id, groop_id):
                 student = Users.query.filter_by(id=i.id).first()
                 students.append((i.id, f'{student.last_name} {student.name}'))
             students.sort(key=lambda w: w[1])
+            subject = Subjects.query.filter_by(id=subject_id).first()
+            us = Users.query.filter_by(id=current_user.id).first()
+            user = f'{us.last_name} {us.name}'
+            g = Groops.query.filter_by(id=groop_id).first()
             return render_template('profilet.html', dates=dts, students=students, marks=marks,
-                                   subject_id=subject_id, groop_id=groop_id)
+                                   subject_id=str(subject_id), groop_id=groop_id, subjects=subjects, groops=groops,
+                                   task=subject.name, name=user, groop=g.name)
         return abort(403)
     return abort(403)
 

@@ -1,0 +1,78 @@
+body {
+    background-color: #0b0c12;
+    justify-content: center;
+    font-family: 'QuickSand', sans-serif;
+    text-decoration: none;
+    color: #e4e6f0;
+    font-size: 20px;
+}
+
+.main-title p {
+    font-size: 48px;
+    font-weight: 500;
+    margin: 1rem;
+    width: 100%;
+    height: auto;
+}
+
+.log_out {
+    margin-top: 1.5rem;
+}
+
+.head {
+    display: flex;
+    flex-direction: row;
+    gap:calc(100% - 30rem);
+    padding:1rem;
+    width: 100%;
+    height: auto;
+    padding-bottom: 1rem;
+    border-bottom: solid gray 1px;
+}
+
+.log_out {
+    background-color: rgb(36, 92, 214);
+    padding: 0.6rem;
+    width: 10rem;
+    height: 1.2rem;
+    border: solid 0px rgb(36, 92, 214);
+    border-radius: 7px;
+    color: #e4e6f0;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.log_out:hover {
+    background-color: rgb(48, 104, 224);
+    transform: scale(1.05);
+    transition: 0.1s cubic-bezier(0.54, 3.11, 0.6, 0.47);
+}
+
+.main-inf {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    padding-top: 0;
+}
+
+.table table {
+    table-layout: fixed;
+    border-collapse: collapse;
+    border: solid gray 1.5px;
+}
+
+th, td {
+    padding: 1rem;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-align: left;
+}
+
+th {
+    text-align: center;
+}
+
+th:nth-child(2), tr:nth-child(2) {
+    width: 20rem;
+}

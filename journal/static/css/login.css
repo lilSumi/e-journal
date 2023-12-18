@@ -54,7 +54,7 @@ body {
     text-align: center;
     font-family: 'QuickSand', sans-serif;
     font-size: 48px;
-    
+    font-weight: 500;
 }
 
 .box-auth {
@@ -127,6 +127,6 @@ body {
 
 .act-button:hover {
     background-color: rgb(48, 104, 224);
-    scale: 1.01;
-    transition: 0.2s;
+    transform: scale(1.01);
+    transition: 0.1s cubic-bezier(0.54, 3.11, 0.6, 0.47)
 };
